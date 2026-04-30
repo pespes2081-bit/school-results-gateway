@@ -71,10 +71,13 @@
       font-weight: 900;
       color: var(--navy);
     }
-    .logo-area p {
-      font-size: 0.92rem;
-      color: #5a6a80;
-      margin-top: 4px;
+
+    .step-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 6px;
+      text-transform: uppercase;
     }
 
     .form-group {
@@ -113,43 +116,52 @@
       font-weight: 700;
       cursor: pointer;
       transition: all 0.2s;
-      box-shadow: 0 4px 18px rgba(10,22,40,0.25);
+      margin-top: 4px;
     }
-    .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+    .btn:hover { opacity: 0.92; transform: translateY(-2px); }
+
+    .btn-admin {
+      background: linear-gradient(135deg, #2c2c54, #474787);
+      margin-top: 10px;
+    }
 
     .error-msg {
       background: #fdeaea;
       color: var(--danger);
       border: 1.5px solid #f5c6c6;
       border-radius: 10px;
-      padding: 10px;
+      padding: 10px 16px;
       font-size: 0.95rem;
       margin-top: 14px;
       display: none;
       text-align: center;
     }
 
-    /* Results styling */
     .subjects-table {
       width: 100%;
       border-collapse: separate;
       border-spacing: 0 10px;
+      margin-bottom: 22px;
     }
     .subjects-table td {
       padding: 14px 16px;
       background: var(--white);
-      border-radius: 12px;
       font-weight: 600;
+      color: var(--navy);
     }
+    .subjects-table tr td:first-child { border-radius: 0 12px 12px 0; }
+    .subjects-table tr td:last-child  { border-radius: 12px 0 0 12px; text-align: center; }
+
     .grade-badge {
       display: inline-block;
       padding: 4px 14px;
       border-radius: 20px;
+      font-size: 1.05rem;
       font-weight: 900;
     }
-    .grade-high { background: #d4f5e2; color: #1a7a45; }
-    .grade-mid  { background: #fff3cd; color: #856404; }
-    .grade-low  { background: #fde8e8; color: #a11e1e; }
+    .grade-high   { background: #d4f5e2; color: #1a7a45; }
+    .grade-mid    { background: #fff3cd; color: #856404; }
+    .grade-low    { background: #fde8e8; color: #a11e1e; }
 
     .summary-box {
       background: linear-gradient(135deg, var(--navy), var(--blue));
@@ -158,11 +170,23 @@
       display: flex;
       justify-content: space-between;
       color: var(--white);
-      margin-top: 20px;
+      margin-bottom: 22px;
     }
+    .summary-box .value { font-size: 1.8rem; font-weight: 900; color: var(--gold-light); }
 
     .screen { display: none; }
     .screen.active { display: block; }
+
+    .logout-btn {
+      background: transparent;
+      border: 2px solid var(--navy);
+      color: var(--navy);
+      width: 100%;
+      padding: 11px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -176,27 +200,29 @@
         </svg>
       </div>
       <h1>بوابة النتائج المدرسية</h1>
-      <p>أدخل الرموز للاطلاع على نتيجتك</p>
     </div>
 
+    <div class="step-label">الخطوة ١</div>
     <div class="form-group">
       <label>🔐 رمز المدرسة</label>
-      <input type="password" id="school-code" placeholder="أدخل رمز المدرسة" value="ali2026">
+      <input type="password" id="school-code" placeholder="أدخل رمز المدرسة" autocomplete="off" />
     </div>
 
+    <div class="step-label">الخطوة ٢</div>
     <div class="form-group">
       <label>🎓 الرمز الشخصي</label>
-      <input type="password" id="student-code" placeholder="أدخل رمزك الشخصي">
+      <input type="password" id="student-code" placeholder="أدخل رمزك الشخصي" autocomplete="off" />
     </div>
 
     <button class="btn" onclick="doLogin()">🔍 عرض النتيجة</button>
+    <button class="btn btn-admin" onclick="doAdminLogin()">⚙️ دخول المدير</button>
     <div class="error-msg" id="error-msg"></div>
   </div>
 
   <div class="screen" id="screen-results">
-    <div style="text-align:center; margin-bottom: 20px;">
-      <h2 id="res-name" style="color:var(--navy); font-size:1.5rem;"></h2>
-      <p style="color:#5a6a80;">تفاصيل النتيجة النهائية</p>
+    <div class="student-header" style="text-align:center; margin-bottom:28px;">
+      <h2 id="res-name" style="color:var(--navy); font-size:1.4rem;"></h2>
+      <p style="color:#5a6a80;">نتيجة الطالب النهائية</p>
     </div>
 
     <table class="subjects-table">
@@ -205,28 +231,29 @@
 
     <div class="summary-box">
       <div>
-        <div style="font-size:0.8rem; opacity:0.8;">المجموع الكلي</div>
-        <div id="res-total" style="font-size:1.6rem; font-weight:900; color:var(--gold-light);"></div>
+        <div style="font-size:0.9rem; opacity:0.8;">المجموع الكلي</div>
+        <div class="value" id="res-total"></div>
       </div>
       <div style="text-align:left">
-        <div style="font-size:0.8rem; opacity:0.8;">المعدل</div>
-        <div id="res-avg" style="font-size:1.6rem; font-weight:900; color:var(--gold-light);"></div>
+        <div style="font-size:0.9rem; opacity:0.8;">المعدل</div>
+        <div class="value" id="res-avg"></div>
       </div>
     </div>
 
-    <button class="btn" style="margin-top:20px; background:var(--navy);" onclick="location.reload()">← العودة</button>
+    <button class="logout-btn" onclick="location.reload()">← خروج</button>
   </div>
 </div>
 
 <script>
   const SCHOOL_CODE = "ali2026";
+  const ADMIN_CODE  = "2027";
 
   const students = [
     {
       name: "عبدالقادر أحمد خلف",
       code: "2026",
       subjects: [
-        { name: "الرياضيات", grade: 46 },
+        { name: "الرياضيات",  grade: 46 },
         { name: "التربية الإسلامية", grade: 90 },
         { name: "اللغة الإنجليزية", grade: 35 }
       ]
@@ -235,25 +262,25 @@
       name: "أنس عباس زيدان",
       code: "2090",
       subjects: [
-        { name: "الرياضيات", grade: 43 },
+        { name: "الرياضيات",  grade: 43 },
         { name: "التربية الإسلامية", grade: 92 },
         { name: "اللغة الإنجليزية", grade: 76 }
       ]
     },
     {
       name: "جاسم عبدالمنعم",
-      code: "2070", // تم تحديث الرقم السري من 2080 إلى 2070
+      code: "2070", // تم تحديث الرمز
       subjects: [
-        { name: "الرياضيات", grade: 90 },
+        { name: "الرياضيات",  grade: 90 },
         { name: "اللغة الإنجليزية", grade: 43 },
         { name: "اللغة العربية", grade: 74 }
       ]
     },
     {
-      name: "وليد سعد احمد",
-      code: "2001", // الطالب الجديد
+      name: "وليد سعد احمد", // الطالب الجديد
+      code: "2001",
       subjects: [
-        { name: "الرياضيات", grade: 47 },
+        { name: "الرياضيات",  grade: 47 },
         { name: "التربية الإسلامية", grade: 92 },
         { name: "اللغة العربية", grade: 75 }
       ]
@@ -264,20 +291,17 @@
     const sc = document.getElementById('school-code').value.trim();
     const uc = document.getElementById('student-code').value.trim();
     const err = document.getElementById('error-msg');
-    
     err.style.display = 'none';
 
     if (sc !== SCHOOL_CODE) {
       err.textContent = '❌ رمز المدرسة غير صحيح';
-      err.style.display = 'block';
-      return;
+      err.style.display = 'block'; return;
     }
 
     const student = students.find(s => s.code === uc);
     if (!student) {
       err.textContent = '❌ الرمز الشخصي غير صحيح';
-      err.style.display = 'block';
-      return;
+      err.style.display = 'block'; return;
     }
 
     renderResults(student);
@@ -294,18 +318,21 @@
     student.subjects.forEach(sub => {
       total += sub.grade;
       const cls = sub.grade >= 75 ? 'grade-high' : sub.grade >= 50 ? 'grade-mid' : 'grade-low';
-      tbody.innerHTML += `
-        <tr>
-          <td>${sub.name}</td>
-          <td style="text-align:center">
-            <span class="grade-badge ${cls}">${sub.grade}</span>
-          </td>
-        </tr>`;
+      tbody.innerHTML += `<tr><td>${sub.name}</td><td><span class="grade-badge ${cls}">${sub.grade}</span></td></tr>`;
     });
 
-    const avg = (total / student.subjects.length).toFixed(1);
     document.getElementById('res-total').textContent = total;
-    document.getElementById('res-avg').textContent = avg + '%';
+    document.getElementById('res-avg').textContent = (total / student.subjects.length).toFixed(1) + '%';
+  }
+
+  function doAdminLogin() {
+    const sc = document.getElementById('school-code').value.trim();
+    const ac = document.getElementById('student-code').value.trim();
+    if (sc === SCHOOL_CODE && ac === ADMIN_CODE) {
+        alert("قائمة الأكواد:\n" + students.map(s => s.name + ": " + s.code).join("\n"));
+    } else {
+        alert("بيانات الإدارة غير صحيحة");
+    }
   }
 </script>
 
